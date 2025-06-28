@@ -1,0 +1,274 @@
+[
+    {
+        "id": "a1b2c3d4e5f6",
+        "type": "tab",
+        "label": "Split Python LCD Control",
+        "disabled": false,
+        "info": "Uses separate Python scripts for init/clear and write, with Template node."
+    },
+    {
+        "id": "initclear_inject",
+        "type": "inject",
+        "z": "a1b2c3d4e5f6",
+        "name": "Initialize & Clear LCD",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 200,
+        "y": 100,
+        "wires": [
+            [
+                "exec_init_clear"
+            ]
+        ]
+    },
+    {
+        "id": "exec_init_clear",
+        "type": "exec",
+        "z": "a1b2c3d4e5f6",
+        "command": "python /home/tom/lcd/init.py",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Run Init/Clear Script",
+        "x": 470,
+        "y": 100,
+        "wires": [
+            [
+                "debug_init_stdout"
+            ],
+            [
+                "debug_init_stderr"
+            ],
+            [
+                "debug_init_retcode"
+            ]
+        ]
+    },
+    {
+        "id": "write_l1_inject",
+        "type": "inject",
+        "z": "a1b2c3d4e5f6",
+        "name": "Write L1: \"Hello\"",
+        "props": [
+            {
+                "p": "line",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "testing testing",
+        "payloadType": "str",
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "template_write_cmd"
+            ]
+        ]
+    },
+    {
+        "id": "template_write_cmd",
+        "type": "template",
+        "z": "a1b2c3d4e5f6",
+        "name": "Build Write Command",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": " --line \"{{line}}\" --message \"{{payload}}\"",
+        "output": "str",
+        "x": 440,
+        "y": 230,
+        "wires": [
+            [
+                "exec_write_line",
+                "debug_write_cmd"
+            ]
+        ]
+    },
+    {
+        "id": "exec_write_line",
+        "type": "exec",
+        "z": "a1b2c3d4e5f6",
+        "command": "python /home/tom/lcd/write.py",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Run Write Script",
+        "x": 690,
+        "y": 230,
+        "wires": [
+            [
+                "debug_write_stdout"
+            ],
+            [
+                "debug_write_stderr"
+            ],
+            [
+                "debug_write_retcode"
+            ]
+        ]
+    },
+    {
+        "id": "debug_init_stdout",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Init stdout",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 700,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "debug_init_stderr",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Init stderr",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 700,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "debug_init_retcode",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Init RC",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 690,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "debug_write_cmd",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Write Cmd",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 460,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "debug_write_stdout",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Write stdout",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 910,
+        "y": 190,
+        "wires": []
+    },
+    {
+        "id": "debug_write_stderr",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Write stderr",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 910,
+        "y": 230,
+        "wires": []
+    },
+    {
+        "id": "debug_write_retcode",
+        "type": "debug",
+        "z": "a1b2c3d4e5f6",
+        "name": "Write RC",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 900,
+        "y": 270,
+        "wires": []
+    },
+    {
+        "id": "4e18e5cfc205dbd4",
+        "type": "inject",
+        "z": "a1b2c3d4e5f6",
+        "name": "Write L2: \"Node-RED\"",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "line",
+                "v": "2",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Hello Tom",
+        "payloadType": "str",
+        "x": 200,
+        "y": 260,
+        "wires": [
+            [
+                "template_write_cmd"
+            ]
+        ]
+    }
+]
