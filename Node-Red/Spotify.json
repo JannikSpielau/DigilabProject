@@ -1,0 +1,365 @@
+[
+    {
+        "id": "c478eca26e887bdb",
+        "type": "tab",
+        "label": "Spotify",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3544f89edf5b1980",
+        "type": "rpi-gpio in",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "pin": "19",
+        "intype": "tri",
+        "debounce": "25",
+        "read": false,
+        "bcm": true,
+        "x": 210,
+        "y": 260,
+        "wires": [
+            [
+                "79459d8dbfeb376e"
+            ]
+        ]
+    },
+    {
+        "id": "bde8dfe793b1e540",
+        "type": "rpi-gpio in",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "pin": "16",
+        "intype": "tri",
+        "debounce": "25",
+        "read": false,
+        "bcm": true,
+        "x": 210,
+        "y": 380,
+        "wires": [
+            [
+                "799d6f5087e9a8e9"
+            ]
+        ]
+    },
+    {
+        "id": "6dd03cf94315b19d",
+        "type": "rpi-gpio in",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "pin": "20",
+        "intype": "tri",
+        "debounce": "25",
+        "read": false,
+        "bcm": true,
+        "x": 210,
+        "y": 140,
+        "wires": [
+            [
+                "809570704a4a7b11"
+            ]
+        ]
+    },
+    {
+        "id": "809570704a4a7b11",
+        "type": "switch",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 330,
+        "y": 140,
+        "wires": [
+            [
+                "94fa75ea5b1052ab"
+            ],
+            [
+                "94fa75ea5b1052ab"
+            ]
+        ]
+    },
+    {
+        "id": "94fa75ea5b1052ab",
+        "type": "http request",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://spotify.sb8r3gi2hkfj.xyz/pauseresume",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "79459d8dbfeb376e",
+        "type": "switch",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 330,
+        "y": 260,
+        "wires": [
+            [
+                "65773e0f72d5e519"
+            ]
+        ]
+    },
+    {
+        "id": "65773e0f72d5e519",
+        "type": "http request",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://spotify.sb8r3gi2hkfj.xyz/previous",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 260,
+        "wires": [
+            [
+                "103b19420490dff7"
+            ]
+        ]
+    },
+    {
+        "id": "103b19420490dff7",
+        "type": "function",
+        "z": "c478eca26e887bdb",
+        "name": "Extract Song Data",
+        "func": "const parsedJson = JSON.parse(msg.payload);\n\nmsg.artist = parsedJson.message.artist;\nmsg.title = parsedJson.message.title;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 260,
+        "wires": [
+            [
+                "bd328663a1e7070f"
+            ]
+        ]
+    },
+    {
+        "id": "bd328663a1e7070f",
+        "type": "template",
+        "z": "c478eca26e887bdb",
+        "name": "Build Write Command",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": " --line 0 --message \"{{title}}\" --line 1 --message \"{{artist}}\"",
+        "output": "str",
+        "x": 860,
+        "y": 260,
+        "wires": [
+            [
+                "2237f76569137137"
+            ]
+        ]
+    },
+    {
+        "id": "2237f76569137137",
+        "type": "exec",
+        "z": "c478eca26e887bdb",
+        "command": "python /home/Wei/digilab/lcd/write_line.py",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Run Write Script",
+        "x": 1060,
+        "y": 260,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "b58923d8cc4d5e2e",
+        "type": "exec",
+        "z": "c478eca26e887bdb",
+        "command": "python /home/Wei/digilab/lcd/write_line.py",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Run Write Script",
+        "x": 1060,
+        "y": 380,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5f601a92c35fa172",
+        "type": "template",
+        "z": "c478eca26e887bdb",
+        "name": "Build Write Command",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": " --line 0 --message \"{{title}}\" --line 1 --message \"{{artist}}\"",
+        "output": "str",
+        "x": 860,
+        "y": 380,
+        "wires": [
+            [
+                "b58923d8cc4d5e2e"
+            ]
+        ]
+    },
+    {
+        "id": "0c3bdb056818d72e",
+        "type": "function",
+        "z": "c478eca26e887bdb",
+        "name": "Extract Song Data",
+        "func": "const parsedJson = JSON.parse(msg.payload);\n\nmsg.artist = parsedJson.message.artist;\nmsg.title = parsedJson.message.title;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 380,
+        "wires": [
+            [
+                "5f601a92c35fa172"
+            ]
+        ]
+    },
+    {
+        "id": "a43a9719883e7ace",
+        "type": "http request",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://spotify.sb8r3gi2hkfj.xyz/next",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 380,
+        "wires": [
+            [
+                "0c3bdb056818d72e"
+            ]
+        ]
+    },
+    {
+        "id": "799d6f5087e9a8e9",
+        "type": "switch",
+        "z": "c478eca26e887bdb",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 330,
+        "y": 380,
+        "wires": [
+            [
+                "a43a9719883e7ace"
+            ]
+        ]
+    },
+    {
+        "id": "9b9e0c4ed2890132",
+        "type": "comment",
+        "z": "c478eca26e887bdb",
+        "name": "Next Song",
+        "info": "",
+        "x": 220,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3d6ae7747fb72256",
+        "type": "comment",
+        "z": "c478eca26e887bdb",
+        "name": "Pause/Resume",
+        "info": "",
+        "x": 240,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5bdd183862f79d21",
+        "type": "comment",
+        "z": "c478eca26e887bdb",
+        "name": "Previous Song",
+        "info": "",
+        "x": 240,
+        "y": 340,
+        "wires": []
+    }
+]
